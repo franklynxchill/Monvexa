@@ -1,0 +1,18 @@
+import express from "express";
+import {
+  createTransaction,
+  deleteTransaction,
+  getTransaction,
+  updateTransaction
+} from "../controllers/tansaction.controller";
+
+import { protect } from "../middlewares/auth.middleware";
+
+const router = express.Router();
+
+router.post("/", protect, createTransaction);
+router.get("/", protect, getTransaction);
+router.put("/:id", protect, updateTransaction);
+router.delete("/:id", protect, deleteTransaction);
+
+export default router;
