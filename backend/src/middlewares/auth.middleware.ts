@@ -1,33 +1,57 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: {
     userId: string;
   };
 }
 
-export const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.cookies?.token;
+interface CustomJwtPayload extends JwtPayload {
+  userId: string;
+}
 
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
+export const protect = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
   try {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error("JWT_SECRET not defined");
+    const token = req.cookies?.accessToken;
 
-    const decoded = jwt.verify(token, secret) as {
-      userId: string;
-    };
+    if (!token) {
+      res.status(401).json({
+        message: "Unauthorized - No token",
+      });
+      return;
+    }
+
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+      res.status(500).json({
+        message: "JWT_SECRET missing",
+      });
+      return;
+    }
+
+    const decoded = jwt.verify(token, secret) as CustomJwtPayload;
+
+    if (!decoded.userId) {
+      res.status(401).json({
+        message: "Invalid token payload",
+      });
+      return;
+    }
 
     req.user = {
       userId: decoded.userId,
     };
 
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+  } catch (error) {
+    res.status(401).json({
+      message: "Unauthorized - Invalid token",
+    });
   }
 };
