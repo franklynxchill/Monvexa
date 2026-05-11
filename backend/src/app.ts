@@ -24,7 +24,9 @@ app.use(
   })
 );
 
-
+app.get("/", (req, res) => {
+  res.send("Monvexa API is running...");
+});
 app.use(express.json());
 app.use(cookieParser());
 
