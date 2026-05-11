@@ -5,12 +5,13 @@ import {
   deleteTransaction,
   getTransaction,
   updateTransaction,
-} from "../controllers/tansaction.controller";
+} from "../controllers/transaction.controller";
 
-import { protect } from "../middlewares/auth.middleware";
+import { protect } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
+// ✅ MUST be a function
 router.use(protect);
 
 router.post("/", createTransaction);

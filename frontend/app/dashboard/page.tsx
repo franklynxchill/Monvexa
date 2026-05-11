@@ -75,16 +75,24 @@ export default function Page() {
   };
 
   useEffect(() => {
+
+
     const fetchDashboard = async () => {
       try {
-        const res = await fetch("http://localhost:5100/api/dashboard", {
+        const res = await fetch(`http://localhost:5100/api/dashboard`, {
           credentials: "include",
         });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Dashboard API error:", errorText);
+          return;
+        }
 
         const data = await res.json();
         setDashboard(data);
       } catch (error) {
-        console.error(error);
+        console.error("Fetch failed:", error);
       }
     };
 

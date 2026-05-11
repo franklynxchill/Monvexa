@@ -1,13 +1,10 @@
 import express from "express";
 import { getDashboard } from "../controllers/dashboard.controller";
-import { protect } from "../middlewares/auth.middleware";
+import { protect } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
-// ====================================
-// GET DASHBOARD
-// ====================================
-
-router.get("/", protect, getDashboard)
+// 🔥 MUST PROTECT THIS ROUTE
+router.get("/", protect, getDashboard);
 
 export default router;

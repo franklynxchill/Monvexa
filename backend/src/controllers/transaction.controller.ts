@@ -3,7 +3,7 @@ import { Response, Request } from "express";
 import Transaction from "../models/transaction.model";
 import Category from "../models/category.model";
 
-import { AuthRequest } from "../middlewares/auth.middleware";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 // CREATE TRANSACTION
 export const createTransaction = async (

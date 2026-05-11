@@ -17,7 +17,6 @@ connectDB();
 
 const app = express();
 
-// Middleware
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -25,10 +24,10 @@ app.use(
   })
 );
 
+
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
 app.use("/api/auth", authRoute);
 app.use("/api/transactions", transactionRoute);
 app.use("/api/categories", categoryRoute);

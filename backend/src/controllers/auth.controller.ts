@@ -1,55 +1,48 @@
-import User from "../models/user.model";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../utils/token.utils";
+import User from "../models/user.model";
+import { generateToken } from "../utils/generateToken";
 
-import {
-  accessCookieOptions,
-  refreshCookieOptions,
-} from "../utils/cookie.config";
 
-/* =========================
-   SIGNUP
-========================= */
-export const signup = async (req: Request, res: Response) => {
+// =======================
+// SIGNUP
+// =======================
+export const signup = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { fullName, email, password } = req.body;
 
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User already exists" });
     }
 
-    const emailLower = email.toLowerCase();
-
-    const exists = await User.findOne({ email: emailLower });
-    if (exists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashed = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       fullName,
-      email: emailLower,
-      password: hashed,
+      email,
+      password: hashedPassword,
     });
 
-    const accessToken = generateAccessToken(user._id.toString());
-    const refreshToken = generateRefreshToken(
-      user._id.toString(),
-      user.refreshTokenVersion
-    );
+    const token = generateToken(user._id.toString());
 
-    res.cookie("accessToken", accessToken, accessCookieOptions);
-    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
-    return res.status(201).json({
+    res.status(201).json({
       message: "Signup successful",
       user: {
         id: user._id,
@@ -58,154 +51,223 @@ export const signup = async (req: Request, res: Response) => {
       },
     });
   } catch (err) {
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };
 
-/* =========================
-   LOGIN
-========================= */
-export const login = async (req: Request, res: Response) => {
+
+// =======================
+// LOGIN
+// =======================
+export const login = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { email, password } = req.body;
 
-    const emailLower = email.toLowerCase();
+    const user = await User.findOne({ email })
+      .select("+password");
 
-    const user = await User.findOne({ email: emailLower });
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const accessToken = generateAccessToken(user._id.toString());
-    const refreshToken = generateRefreshToken(
-      user._id.toString(),
-      user.refreshTokenVersion
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
     );
 
-    res.cookie("accessToken", accessToken, accessCookieOptions);
-    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none", // 🔥 FIX HERE
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
       message: "Login successful",
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-      },
     });
-  } catch (err) {
-    return res.status(500).json({ message: "Server error" });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 };
 
-/* =========================
-   REFRESH TOKEN
-========================= */
-export const refresh = async (req: Request, res: Response) => {
-  try {
-    const token = req.cookies.refreshToken;
 
-    if (!token) {
-      return res.status(401).json({ message: "No refresh token" });
-    }
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_REFRESH_SECRET as string
-    ) as any;
-
-    const user = await User.findById(decoded.userId);
-
-    if (!user || decoded.version !== user.refreshTokenVersion) {
-      return res.status(401).json({ message: "Invalid session" });
-    }
-
-    const newAccessToken = generateAccessToken(user._id.toString());
-    const newRefreshToken = generateRefreshToken(
-      user._id.toString(),
-      user.refreshTokenVersion
-    );
-
-    res.cookie("accessToken", newAccessToken, accessCookieOptions);
-    res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
-
-    return res.json({ message: "Token refreshed" });
-  } catch (err) {
-    return res.status(401).json({ message: "Refresh failed" });
-  }
-};
-
-/* =========================
-   LOGOUT
-========================= */
-export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("accessToken", accessCookieOptions);
-  res.clearCookie("refreshToken", refreshCookieOptions);
-
-  return res.json({ message: "Logged out" });
-};
-
-/* =========================
-   FORGOT PASSWORD
-========================= */
-export const forgotPassword = async (req: Request, res: Response) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email: email.toLowerCase() });
-
-  if (!user) {
-    return res.status(200).json({ message: "If email exists, link sent" });
-  }
-
-  const resetToken = crypto.randomBytes(32).toString("hex");
-
-  const hashed = crypto.createHash("sha256").update(resetToken).digest("hex");
-
-  user.passwordResetToken = hashed;
-  user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
-
-  await user.save();
-
-  console.log(`Reset link: /reset-password/${resetToken}`);
-
-  return res.json({ message: "Reset link sent" });
-};
-
-/* =========================
-   RESET PASSWORD
-========================= */
-export const resetPassword = async (req: Request, res: Response) => {
-  const rawToken = req.params.token;
-
-  if (!rawToken || typeof rawToken !== "string") {
-    return res.status(400).json({ message: "Invalid token" });
-  }
-
-  if (!req.body.password || req.body.password.length < 6) {
-  return res.status(400).json({ message: "Invalid password" });
-}
-
-  const hashed = crypto.createHash("sha256").update(rawToken).digest("hex");
-
-  const user = await User.findOne({
-    passwordResetToken: hashed,
-    passwordResetExpires: { $gt: new Date() },
+// =======================
+// LOGOUT
+// =======================
+export const logout = (
+  req: Request,
+  res: Response
+) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
   });
 
-  if (!user) {
-    return res.status(400).json({ message: "Invalid token" });
+  res.status(200).json({
+    message: "Logged out",
+  });
+};
+
+
+// =======================
+// GET CURRENT USER
+// =======================
+export const getMe = async (
+  req: any,
+  res: Response
+) => {
+  try {
+    const user = await User.findById(req.user.userId)
+      .select("-password");
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({
+      message: "Server error",
+    });
   }
+};
 
-  user.password = await bcrypt.hash(req.body.password, 10);
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
+// =======================
+// FORGET PASSWORD
+// =======================
 
-  await user.save();
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
 
-  return res.json({ message: "Password reset successful" });
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(200).json({
+        message:
+          "If account exists, reset link has been sent",
+      });
+    }
+
+    // generate random token
+    const resetToken = crypto
+      .randomBytes(32)
+      .toString("hex");
+
+    // hash token before saving
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    // save hashed token
+    user.passwordResetToken = hashedToken;
+
+    // expires in 10 mins
+    user.passwordResetExpires = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    await user.save();
+
+    // frontend reset URL
+    const resetUrl =
+      `http://localhost:3000/reset-password/${resetToken}`;
+
+    console.log("RESET URL:", resetUrl);
+
+    // later replace with nodemailer/email
+
+    res.status(200).json({
+      message:
+        "If account exists, reset link has been sent",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+// =======================
+// RESET PASSWORD
+// =======================
+
+export const resetPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const token = req.params.token;
+
+    if (!token || Array.isArray(token)) {
+      return res.status(400).json({
+        message: "Invalid token",
+      });
+    }
+
+    const { password } = req.body;
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: {
+        $gt: new Date(),
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid or expired token",
+      });
+    }
+
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Password reset successful",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
 };

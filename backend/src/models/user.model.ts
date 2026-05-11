@@ -24,9 +24,14 @@ const newUser = new mongoose.Schema<IUser> ({
     type: String,
     required: true,
     minlength: 7,
+    select: false,
   },
-  passwordResetToken: {type: String},
-  passwordResetExpires: { type: Date }
+  passwordResetToken: {
+    type: String
+  },
+  passwordResetExpires: { 
+    type: Date 
+  }
 }, { timestamps: true});
 
 const User = mongoose.models.User || mongoose.model<IUser>("User", newUser)
