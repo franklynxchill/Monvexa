@@ -1,4 +1,4 @@
-import mongoose, { Document} from "mongoose";
+import mongoose, { Document, Model, Schema} from "mongoose";
 export interface ITransaction extends Document {
   amount: number;
   type: "income" | "expense";
@@ -43,6 +43,8 @@ const transactionSchema = new mongoose.Schema<ITransaction> ({
   }
 }, { timestamps: true})
 
-const Transaction = mongoose.models.Transaction || mongoose.model<ITransaction>("Transaction", transactionSchema)
+const Transaction: Model<ITransaction> =
+  mongoose.models.Transaction ||
+  mongoose.model<ITransaction>("Transaction", transactionSchema);
 
 export default Transaction;
