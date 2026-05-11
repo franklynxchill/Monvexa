@@ -43,3 +43,10 @@ export const protect = (
     });
   }
 };
+
+// ✅ TYPE (THIS IS WHAT YOU IMPORT IN CONTROLLERS)
+export interface AuthRequest extends Request {
+  user?: {
+    userId: string;
+  };
+}
