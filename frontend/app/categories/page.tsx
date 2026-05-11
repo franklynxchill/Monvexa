@@ -85,8 +85,8 @@ export default function page() {
 
     try {
       const url = editingId
-        ? `http://localhost:5100/api/categories/${editingId}`
-        : "http://localhost:5100/api/categories";
+        ? `process.env.NEXT_PUBLIC_API_URL/categories/${editingId}`
+        : "process.env.NEXT_PUBLIC_API_URL/categories";
 
       const method = editingId ? "PUT" : "POST";
 
@@ -104,7 +104,7 @@ export default function page() {
       if (res.ok) {
         // refresh categories
         const categoryRes = await fetch(
-          "http://localhost:5100/api/categories",
+          "process.env.NEXT_PUBLIC_API_URL/categories",
           {
             credentials: "include",
           }
@@ -136,7 +136,7 @@ export default function page() {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:5100/api/categories/${id}`, {
+      const res = await fetch(`process.env.NEXT_PUBLIC_API_URL/categories/${id}`, {
         method: "DELETE",
         credentials: "include", // If you have cookies for auth
       });
@@ -159,7 +159,7 @@ export default function page() {
   useEffect(()=> {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5100/api/categories",{
+        const res = await fetch("process.env.NEXT_PUBLIC_API_URL/categories",{
           credentials: "include",
         })
 

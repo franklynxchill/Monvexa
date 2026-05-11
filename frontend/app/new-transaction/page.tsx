@@ -43,7 +43,7 @@ export default function Page() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5100/api/categories", {
+        const res = await fetch("process.env.NEXT_PUBLIC_API_URL/categories", {
           credentials: "include",
         });
 
@@ -99,7 +99,7 @@ export default function Page() {
         date: new Date().toISOString(),
       };
 
-      const res = await fetch("http://localhost:5100/api/transactions", {
+      const res = await fetch("process.env.NEXT_PUBLIC_API_URL/transactions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
