@@ -17,11 +17,14 @@ connectDB();
 
 const app = express();
 
+app.use(express.json());
+app.use(cookieParser());
+
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://monvexa-delta.vercel.app/",
+      "https://monvexa-delta.vercel.app",
     ],
     credentials: true,
   })
@@ -30,8 +33,6 @@ app.use(
 app.get("/", (req, res) => {
   res.send("Monvexa API is running...");
 });
-app.use(express.json());
-app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/transactions", transactionRoute);
