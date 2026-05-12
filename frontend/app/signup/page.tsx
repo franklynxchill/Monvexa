@@ -74,7 +74,7 @@ export default function Page() {
           <div className="">
             <form
               onSubmit ={handleSubmit} 
-              className=" rounded-xl bg-white mt-7 p-8 w-lg"
+              className=" rounded-xl bg-white mt-7 p-8 w-108 md:w-lg"
             >
               <h2 className=" font-bold text-2xl mb-6">Create an account</h2>
 
@@ -132,6 +132,7 @@ export default function Page() {
                   type="checkbox" 
                   onChange={(e) => setAgreed(e.target.checked)}
                   checked = {agreed} 
+                  className=" cursor-pointer"
                 />
                 <label htmlFor="">
                   I agree to the <span className=" text-primary text-sm">Terms of Service</span> and <span className=" text-primary text-sm">Privacy Policy</span> 

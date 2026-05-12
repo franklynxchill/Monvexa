@@ -64,7 +64,7 @@ export default function page() {
 
           <form 
             onSubmit={handleSubmit}
-            className=" rounded-xl bg-white mt-7 p-8 w-lg border-2 border-border outline-ring/50 shadow-2xs"
+            className=" rounded-xl bg-white mt-7 p-8 w-108 md:w-lg border-2 border-border outline-ring/50 shadow-2xs"
           >
             <h2 className=" font-bold text-2xl mb-6">Welcome back</h2>
 
@@ -102,7 +102,7 @@ export default function page() {
 
             <div className=" flex items-center justify-between mt-4">
               <div className=" flex items-center gap-x-3">
-                <input type="checkbox" name="" id="" className=" text-2xl" />
+                <input type="checkbox" name="" id="" className=" text-2xl cursor-pointer" />
                 <label htmlFor="">Remember me</label>
               </div>
 
@@ -113,7 +113,7 @@ export default function page() {
               <button 
                 type="submit"
                 disabled={loading}
-                className=" py-3 px-4 mb-3 rounded-xl w-full text-white bg-primary "
+                className=" py-3 px-4 mb-3 rounded-xl w-full text-white bg-primary cursor-pointer"
               > 
                 {loading ? "Login..." : "Sign in"}
               </button>
