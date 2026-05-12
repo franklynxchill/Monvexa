@@ -16,7 +16,7 @@ export default function Page() {
   const [agreed, setAgreed] = useState(false)
   const router = useRouter();
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {  
     setformData({
       ...formData,
       [e.target.name]: e.target.value
@@ -33,7 +33,7 @@ export default function Page() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
