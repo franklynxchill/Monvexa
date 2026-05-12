@@ -110,7 +110,7 @@ export default function Page() {
   const insights = dashboard.insights;
 
   return (
-    <div className="px-4 pb-28">
+    <div className="px-4 pb-28 min-h-screen">
       <main className="mt-4">
 
         {/* HEADER */}

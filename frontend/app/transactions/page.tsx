@@ -55,7 +55,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="px-4 mt-6">
+    <div className="px-4 mt-6 pb-28 min-h-screen">
       <main>
         {/* Search */}
         <div className="bg-gray-300/20 py-3 px-4 w-full rounded-lg flex items-center gap-x-2">
