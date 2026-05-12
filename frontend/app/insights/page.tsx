@@ -109,7 +109,7 @@ export default function Page() {
     const fetchInsights = async () => {
       try {
         const res = await fetch(
-          "process.env.NEXT_PUBLIC_API_URL/insights",
+          `${process.env.NEXT_PUBLIC_API_URL}/insights`,
           {
             credentials: "include",
           }

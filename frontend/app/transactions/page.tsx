@@ -38,7 +38,7 @@ export default function Page() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const res = await fetch("process.env.NEXT_PUBLIC_API_URL/transactions", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transactions`, {
           credentials: "include",
         });
 
