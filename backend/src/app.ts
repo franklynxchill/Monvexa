@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://monvexa.vercel.app",
+      "https://monvexa-delta.vercel.app/",
     ],
     credentials: true,
   })
