@@ -37,8 +37,8 @@ export const signup = async (
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -96,8 +96,8 @@ export const login = async (
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "none", // 🔥 FIX HERE
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -130,6 +130,8 @@ export const logout = (
 ) => {
   res.cookie("token", "", {
     httpOnly: true,
+    secure: true,
+    sameSite: "none",
     expires: new Date(0),
   });
 
