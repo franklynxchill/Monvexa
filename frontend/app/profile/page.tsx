@@ -12,7 +12,7 @@ function page() {
 
   const handleLogOut = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include" // 🔥 important for cookies
       })

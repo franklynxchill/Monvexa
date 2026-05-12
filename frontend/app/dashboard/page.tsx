@@ -79,7 +79,7 @@ export default function Page() {
 
     const fetchDashboard = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard`, {
           credentials: "include",
         });
 
