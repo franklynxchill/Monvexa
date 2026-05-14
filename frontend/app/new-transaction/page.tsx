@@ -133,7 +133,7 @@ export default function Page() {
               <IoClose className="text-3xl" />
             </Link>
           </div>
-          <h2 className="text-center text-xl font-bold">
+          <h2 className="text-center text-xl font-semibold">
             Add Transaction
           </h2>
         </div>
@@ -166,7 +166,7 @@ export default function Page() {
                   type: "expense",
                 }))
               }
-              className={`flex-1 border-2 rounded-xl py-4 cursor-pointer ${
+              className={`flex-1 border-2 rounded-xl py-3 cursor-pointer ${
                 transactionData.type === "expense"
                   ? "bg-red-500 text-white"
                   : "border-gray-300 bg-white"
@@ -183,7 +183,7 @@ export default function Page() {
                   type: "income",
                 }))
               }
-              className={`flex-1 border-2 rounded-xl py-4 cursor-pointer ${
+              className={`flex-1 border-2 rounded-xl py-3 cursor-pointer ${
                 transactionData.type === "income"
                   ? "bg-green-500 text-white"
                   : "border-gray-300 bg-white"
@@ -207,14 +207,14 @@ export default function Page() {
                     <div
                       key={item._id}
                       onClick={() => handleCategorySelect(item._id)}
-                      className={`border-2 bg-white font-medium rounded-xl py-4 text-center cursor-pointer flex flex-col items-center gap-2 ${
+                      className={`border-2 bg-white font-medium rounded-xl py-3 text-center cursor-pointer flex flex-col items-center gap-2 ${
                         transactionData.category === item._id
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-300"
                       }`}
                     >
                       {Icon && <Icon className="text-2xl" />}
-                      <p>{item.name}</p>
+                      <p className=" text-[.9rem]">{item.name}</p>
                     </div>
                   );
                 })}
@@ -229,7 +229,7 @@ export default function Page() {
               name="note"
               value={transactionData.note}
               onChange={handleChange}
-              className="w-full py-4 px-4 border-2 rounded-xl"
+              className="w-full py-3 px-4 border-2 rounded-xl"
               placeholder="Add a note..."
             />
           </div>
@@ -238,7 +238,7 @@ export default function Page() {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-600 text-white text-lg py-4 w-full rounded-xl cursor-pointer"
+            className="bg-blue-600 text-white text-lg py-3 w-full rounded-xl cursor-pointer"
           >
             {isLoading ? "Saving..." : "Save Transaction"}
           </button>
