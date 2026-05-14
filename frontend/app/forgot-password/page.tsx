@@ -51,7 +51,7 @@ export default function page() {
   
     if (isSubmitted) {
       return
-      <div>
+      <div className="px-4 md:px-8">
         <div className="w-full max-w-lg">
           <h2>Check your email</h2>
           <p>
