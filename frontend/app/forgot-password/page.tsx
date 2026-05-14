@@ -82,7 +82,7 @@ export default function page() {
           <div className="">
             <form
               onSubmit ={handleSubmit} 
-              className=" rounded-xl bg-white mt-7 p-8 w-lg"
+              className=" rounded-xl bg-white mt-7 px-4 py-8 md:p-8 w-full"
             >
               <Link href="/login" className=" flex items-center gap-x-3 mb-6 ">
                 <FaArrowLeft className=" text-base text-gray-600" />

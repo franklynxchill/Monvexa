@@ -128,7 +128,7 @@ export default function Page() {
       <main>
         {/* Header */}
         <div className="flex items-center justify-center">
-          <div className=" absolute top-7 left-5">
+          <div className=" absolute top-6 left-5">
             <Link href="/dashboard">
               <IoClose className="text-3xl" />
             </Link>
