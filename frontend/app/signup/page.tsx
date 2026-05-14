@@ -68,13 +68,13 @@ export default function Page() {
   return (
     <div className=" bg-gray-200 px-8">
       <div className=" flex items-center justify-center h-[130vh]">
-        <div className="">
+        <div className="w-full max-w-lg">
            <h1 className=" text-center font-bold text-3xl">Monvexa</h1>
            <p className=" text-center mt-2">Your Money Clarity System</p>
           <div className="">
             <form
               onSubmit ={handleSubmit} 
-               className="rounded-xl bg-white mt-7 p-5 md:p-8 w-full max-w-lg mx-auto"
+               className="rounded-xl bg-white mt-7  px-3 py-5 md:p-8"
             >
               <h2 className=" font-bold text-2xl mb-6">Create an account</h2>
 
