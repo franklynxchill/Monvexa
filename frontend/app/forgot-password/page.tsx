@@ -52,7 +52,7 @@ export default function page() {
     if (isSubmitted) {
       return
       <div>
-        <div>
+        <div className="w-full max-w-lg">
           <h2>Check your email</h2>
           <p>
             If an account exists for starprince210@gmail.com, a password reset link has been sent.

@@ -74,7 +74,7 @@ export default function Page() {
           <div className="">
             <form
               onSubmit ={handleSubmit} 
-               className="rounded-xl bg-white mt-7 p-8"
+               className="rounded-xl bg-white mt-7 px-4 py-8 md:p-8"
             >
               <h2 className=" font-bold text-2xl mb-6">Create an account</h2>
 

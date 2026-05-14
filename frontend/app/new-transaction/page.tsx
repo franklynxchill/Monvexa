@@ -127,10 +127,12 @@ export default function Page() {
     <div className="px-4 mt-6 mb-16">
       <main>
         {/* Header */}
-        <div className="flex items-center justify-start gap-x-36">
-          <Link href="/dashboard">
-            <IoClose className="text-3xl" />
-          </Link>
+        <div className="flex items-center ">
+          <div className=" absolute top-7 left-5">
+            <Link href="/dashboard">
+              <IoClose className="text-3xl" />
+            </Link>
+          </div>
           <h2 className="text-center text-xl font-bold">
             Add Transaction
           </h2>
