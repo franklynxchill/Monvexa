@@ -127,7 +127,7 @@ export default function Page() {
               </div>
 
                {/* AGREEMENT */}
-              <div className=" flex items-center gap-x-2 mt-5">
+              <div className=" flex items-start gap-x-2 mt-5">
                 <input 
                   type="checkbox" 
                   onChange={(e) => setAgreed(e.target.checked)}

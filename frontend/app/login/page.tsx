@@ -106,7 +106,7 @@ export default function page() {
                 <label htmlFor="">Remember me</label>
               </div>
 
-              <Link href="/forgot-password" className=" mt-2 text-primary">Forgot password?</Link>
+              <Link href="/forgot-password" className=" mt-2 text-primary text-[.8rem]">Forgot password?</Link>
             </div>
 
             <div className=" mt-4">
