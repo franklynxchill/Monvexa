@@ -64,7 +64,7 @@ export default function page() {
 
           <form 
             onSubmit={handleSubmit}
-            className=" rounded-xl bg-white mt-7 p-8 w-108 md:w-lg border-2 border-border outline-ring/50 shadow-2xs"
+            className=" rounded-xl bg-white mt-7 p-5 md:p-8 w-full max-w-lg mx-auto border-2 border-border outline-ring/50 shadow-2xs"
           >
             <h2 className=" font-bold text-2xl mb-6">Welcome back</h2>
 
