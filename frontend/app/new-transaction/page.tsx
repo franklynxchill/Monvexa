@@ -214,7 +214,7 @@ export default function Page() {
                       }`}
                     >
                       {Icon && <Icon className="text-2xl" />}
-                      <p className=" text-[.9rem]">{item.name}</p>
+                      <p className=" text-[.8rem]">{item.name}</p>
                     </div>
                   );
                 })}
