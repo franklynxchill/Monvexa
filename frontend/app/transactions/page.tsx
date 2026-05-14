@@ -120,7 +120,7 @@ export default function Page() {
                 {/* RIGHT SIDE */}
                 <div>
                   <p
-                    className={`font-bold text-2xl ${
+                    className={`font-bold text-xl ${
                       transaction.type === "income"
                         ? "text-green-600"
                         : "text-red-500"

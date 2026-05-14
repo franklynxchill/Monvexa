@@ -156,7 +156,7 @@ export default function Page() {
           <div className="flex-1 bg-white border rounded-2xl p-4 shadow-sm">
             <p className="text-gray-500 text-sm">Weekly Profit</p>
 
-            <h2 className="text-2xl font-bold mt-4">
+            <h2 className="text-xl font-bold mt-4">
               {formatAmount(weekly?.amount)}
             </h2>
 
@@ -170,7 +170,7 @@ export default function Page() {
           <div className="flex-1 bg-white border rounded-2xl p-4 shadow-sm">
             <p className="text-gray-500 text-sm">Monthly Profit</p>
 
-            <h2 className="text-2xl font-bold mt-4">
+            <h2 className="text-xl font-bold mt-4">
               {formatAmount(monthly?.amount)}
             </h2>
 
@@ -279,9 +279,9 @@ export default function Page() {
         <div className="fixed bottom-24 right-4">
           <Link
             href="/new-transaction"
-            className="bg-primary text-white p-3 rounded-full flex items-center justify-center shadow-lg"
+            className="bg-primary text-white p-4 rounded-full flex items-center justify-center shadow-lg"
           >
-            <FiPlus className="text-xl" />
+            <FiPlus className="text-2xl" />
           </Link>
         </div>
 
