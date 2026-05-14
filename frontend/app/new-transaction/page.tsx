@@ -8,6 +8,7 @@ import { FiShoppingBag, FiDollarSign } from "react-icons/fi";
 import { GoHome, GoTag } from "react-icons/go";
 import { PiCarProfile, PiSuitcase } from "react-icons/pi";
 import { IoMdTrendingUp } from "react-icons/io";
+import { Toaster, toast } from "sonner";
 
 type Category = {
   _id: string;
@@ -112,9 +113,11 @@ export default function Page() {
 
       if (!res.ok) {
         console.error("Backend Error:", data.message);
+        toast.error(data.message || "Something went wrong");
         return;
       }
 
+      toast.success("Transaction successful");
       router.push("/dashboard");
     } catch (error) {
       console.error("Error:", error);
@@ -243,6 +246,8 @@ export default function Page() {
             {isLoading ? "Saving..." : "Save Transaction"}
           </button>
         </form>
+
+        <Toaster position="top-right" richColors />
       </main>
     </div>
   );

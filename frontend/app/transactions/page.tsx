@@ -91,7 +91,7 @@ export default function Page() {
                   </div>
 
                   <div>
-                    <h2 className="font-semibold">
+                    <h2 className="font-semibold text-xl">
                       {transaction.category?.name ?? "Unknown Category"}
                     </h2>
 
@@ -120,7 +120,7 @@ export default function Page() {
                 {/* RIGHT SIDE */}
                 <div>
                   <p
-                    className={`font-bold text-xl ${
+                    className={`font-bold text-lg ${
                       transaction.type === "income"
                         ? "text-green-600"
                         : "text-red-500"
