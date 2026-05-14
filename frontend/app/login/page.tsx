@@ -56,7 +56,7 @@ export default function page() {
   }
 
   return (
-    <div className=" bg-gray-200 px-4 md:px-8">
+    <div className=" bg-gray-200 px-6 md:px-8">
       <div className=" flex items-center justify-center h-screen">
         <div className="w-full max-w-lg">
           <h1 className=" text-center font-bold text-3xl">Monvexa</h1>
@@ -64,7 +64,7 @@ export default function page() {
 
           <form 
             onSubmit={handleSubmit}
-            className=" rounded-xl bg-white mt-7 px-3 py-5 md:p-8 w-full border-2 border-border outline-ring/50 shadow-2xs"
+            className=" rounded-xl bg-white mt-7 p-8 w-full border-2 border-border outline-ring/50 shadow-2xs"
           >
             <h2 className=" font-bold text-2xl mb-6">Welcome back</h2>
 
