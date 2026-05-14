@@ -66,7 +66,7 @@ export default function Page() {
   } 
 
   return (
-    <div className=" bg-gray-200 px-6">
+    <div className=" bg-gray-200 px-4 md:px-8">
       <div className=" flex items-center justify-center h-[130vh]">
         <div className="w-full max-w-lg">
            <h1 className=" text-center font-bold text-3xl">Monvexa</h1>

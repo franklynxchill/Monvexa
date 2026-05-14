@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <div>
       <nav className=" fixed bottom-0 z-40 w-full py-3 border-t-2 border-t-gray-300 bg-white">
-        <div className=" flex items-center gap-x-3">
+        <div className=" flex items-center gap-x-6">
           <Link href="/dashboard" className=" flex flex-col gap-y-1 items-center justify-center text-[.8rem] md:text-base">
             <GoHome className=" text-lg md:text-xl" />
             Home
