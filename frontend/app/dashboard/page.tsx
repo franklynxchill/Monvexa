@@ -15,20 +15,9 @@ type DashboardData = {
   };
 
   profitMetrics?: {
-    today?: {
-      amount?: number;
-      change?: number;
-    };
-
-    weekly?: {
-      amount?: number;
-      change?: number;
-    };
-
-    monthly?: {
-      amount?: number;
-      change?: number;
-    };
+    today?: { amount?: number; change?: number };
+    weekly?: { amount?: number; change?: number };
+    monthly?: { amount?: number; change?: number };
   };
 
   weeklyStats?: {
@@ -39,17 +28,8 @@ type DashboardData = {
   };
 
   insights?: {
-    topExpense?: {
-      category?: string;
-      amount?: number;
-      percentage?: number;
-    };
-
-    topIncome?: {
-      category?: string;
-      amount?: number;
-      percentage?: number;
-    };
+    topExpense?: { category?: string; amount?: number; percentage?: number };
+    topIncome?: { category?: string; amount?: number; percentage?: number };
   };
 
   recentTransactions?: any[];
@@ -60,10 +40,10 @@ export default function Page() {
 
   // FORMAT MONEY
   const formatAmount = (amount?: number) => {
-    if (!amount && amount !== 0) return "₦0";
+    if (amount === undefined || amount === null) return "₦0";
 
-    if (amount >= 1000000) return `₦${(amount / 1000000).toFixed(1)}M`;
-    if (amount >= 1000) return `₦${(amount / 1000).toFixed(1)}K`;
+    if (amount >= 1_000_000) return `₦${(amount / 1_000_000).toFixed(1)}M`;
+    if (amount >= 1_000) return `₦${(amount / 1_000).toFixed(1)}K`;
 
     return `₦${amount.toLocaleString()}`;
   };
@@ -75,33 +55,24 @@ export default function Page() {
   };
 
   useEffect(() => {
-
-
     const fetchDashboard = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard`, {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          console.error("Dashboard API error:", errorText);
-          return;
-        }
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard`,
+          { credentials: "include" }
+        );
 
         const data = await res.json();
         setDashboard(data);
       } catch (error) {
-        console.error("Fetch failed:", error);
+        console.error(error);
       }
     };
 
     fetchDashboard();
   }, []);
 
-  if (!dashboard) {
-    return <p className="mt-10 px-4">Loading...</p>;
-  }
+  if (!dashboard) return <p className="mt-10 px-4">Loading...</p>;
 
   const today = dashboard.profitMetrics?.today;
   const weekly = dashboard.profitMetrics?.weekly;
@@ -114,38 +85,48 @@ export default function Page() {
       <main className="mt-4">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-gray-500">
-              Welcome back! Here's your financial overview
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-gray-500">
+            Welcome back! Here's your financial overview
+          </p>
         </div>
 
-        {/* TODAY PROFIT */}
-        <div className="mt-8 bg-primary text-white rounded-3xl p-6 shadow-sm">
+        {/* TODAY */}
+        <div className="mt-8 bg-primary text-white rounded-3xl p-6">
 
           <div className="flex items-center justify-between">
             <p className="text-white/80">Today's Profit</p>
 
-            <div className="bg-white/20 px-5 py-1.5 rounded-full flex items-center gap-x-1 text-sm">
-              <IoMdTrendingUp />
-              {today?.change ?? 0}%
+            <div
+              className={`px-5 py-1.5 rounded-full flex items-center gap-x-1 text-sm ${
+                (today?.change ?? 0) >= 0
+                  ? "bg-white/20 text-green-200"
+                  : "bg-white/20 text-red-200"
+              }`}
+            >
+              {(today?.change ?? 0) >= 0 ? (
+                <IoMdTrendingUp />
+              ) : (
+                <MdOutlineArrowOutward className="rotate-180" />
+              )}
+
+              {formatPercentage(today?.change)}
             </div>
           </div>
 
           <h2 className="text-4xl font-bold mt-3">
-            ₦{today?.amount?.toLocaleString() ?? 0}
+            {formatAmount(today?.amount)}
           </h2>
 
-          <p className="mt-5 text-sm text-white/80">
-            {new Date().toLocaleDateString("en-NG", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+          <p 
+            className="mt-5 text-sm text-white/80"
+          > {new Date().toLocaleDateString("en-NG", { 
+            weekday: "long", 
+            year: "numeric", 
+            month: "long", 
+            day: "numeric", 
+            })}   
           </p>
         </div>
 
@@ -153,36 +134,59 @@ export default function Page() {
         <div className="flex gap-4 mt-6">
 
           {/* WEEKLY */}
-          <div className="flex-1 bg-white border rounded-2xl p-4 shadow-sm">
+          <div className="flex-1 bg-white border rounded-2xl p-4">
             <p className="text-gray-500 text-sm">Weekly Profit</p>
 
             <h2 className="text-xl font-bold mt-4">
               {formatAmount(weekly?.amount)}
             </h2>
 
-            <p className="text-green-600 font-semibold mt-2 flex items-center gap-x-1">
-              <IoMdTrendingUp />
+            <p
+              className={`font-semibold mt-2 flex items-center gap-x-1 ${
+                (weekly?.change ?? 0) >= 0
+                  ? "text-green-600"
+                  : "text-red-500"
+              }`}
+            >
+              {(weekly?.change ?? 0) >= 0 ? (
+                <IoMdTrendingUp />
+              ) : (
+                <MdOutlineArrowOutward className="rotate-180" />
+              )}
+
               {formatPercentage(weekly?.change)}
             </p>
           </div>
 
           {/* MONTHLY */}
-          <div className="flex-1 bg-white border rounded-2xl p-4 shadow-sm">
+          <div className="flex-1 bg-white border rounded-2xl p-4">
             <p className="text-gray-500 text-sm">Monthly Profit</p>
 
             <h2 className="text-xl font-bold mt-4">
               {formatAmount(monthly?.amount)}
             </h2>
 
-            <p className="text-green-600 font-semibold mt-2 flex items-center gap-x-1">
-              <IoMdTrendingUp />
+            <p
+              className={`font-semibold mt-2 flex items-center gap-x-1 ${
+                (monthly?.change ?? 0) >= 0
+                  ? "text-green-600"
+                  : "text-red-500"
+              }`}
+            >
+              {(monthly?.change ?? 0) >= 0 ? (
+                <IoMdTrendingUp />
+              ) : (
+                <MdOutlineArrowOutward className="rotate-180" />
+              )}
+
               {formatPercentage(monthly?.change)}
             </p>
           </div>
         </div>
 
         {/* WEEKLY STATS */}
-        <div className="my-7 bg-white rounded-2xl border p-5 shadow-sm">
+        <div className="my-7 bg-white rounded-2xl border p-5">
+
           <h2 className="text-lg font-bold mb-6">This Week</h2>
 
           {/* INCOME */}
@@ -197,7 +201,9 @@ export default function Page() {
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div
                 className="bg-green-500 h-full rounded-full"
-                style={{ width: `${weeklyStats?.incomePercentage ?? 0}%` }}
+                style={{
+                  width: `${weeklyStats?.incomePercentage ?? 0}%`,
+                }}
               />
             </div>
           </div>
@@ -214,14 +220,17 @@ export default function Page() {
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div
                 className="bg-red-500 h-full rounded-full"
-                style={{ width: `${weeklyStats?.expensePercentage ?? 0}%` }}
+                style={{
+                  width: `${weeklyStats?.expensePercentage ?? 0}%`,
+                }}
               />
             </div>
           </div>
         </div>
 
         {/* QUICK INSIGHTS */}
-        <div className="border rounded-2xl p-5 bg-white shadow-sm">
+        <div className="border rounded-2xl p-5 bg-white">
+
           <h2>Quick Insights</h2>
 
           <div className="space-y-3 mt-4">

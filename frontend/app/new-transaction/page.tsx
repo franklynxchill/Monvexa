@@ -71,6 +71,11 @@ export default function Page() {
       ...prev,
       [name]: value,
     }));
+
+    setErrors({
+      ...errors,
+      [e.target.name] : ""
+    })
   };
 
   // ✅ Category handler (FIXED)
