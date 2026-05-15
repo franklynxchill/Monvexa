@@ -8,9 +8,9 @@ import { LuChartPie } from "react-icons/lu"
 
 function Navbar() {
   return (
-    <div className="px-4 md:px-8">
+    <div className="px-4">
       <nav className=" fixed bottom-0 z-40 w-full py-3 border-t-2 border-t-gray-300 bg-white">
-        <div className=" flex items-center justify-center gap-x-5 md:gap-x-0 md:justify-between ">
+        <div className=" flex items-center justify-center gap-x-5 md:gap-x-0 md:justify-evenly ">
           <Link href="/dashboard" className=" flex flex-col gap-y-1 items-center justify-center text-[.9rem] md:text-base">
             <GoHome className=" text-xl" />
             Home

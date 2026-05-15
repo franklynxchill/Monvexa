@@ -1,131 +1,281 @@
-"use client"
+"use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import { FiLock } from "react-icons/fi";
 import { HiOutlineMail } from "react-icons/hi";
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "sonner";
 
+export default function Page() {
+  const router = useRouter();
 
-export default function page() {
-  const [formData, setformData] = useState({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleChange = ( e:React.ChangeEvent<HTMLInputElement>) => {
-    setformData({
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  // HANDLE INPUT CHANGE
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
 
-  const handleSubmit = async ( e:React.FormEvent) => {
+    // CLEAR FIELD ERROR
+    setErrors({
+      ...errors,
+      [e.target.name]: "",
+    });
+  };
+
+  // HANDLE SUBMIT
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
+
+    const newErrors = {
+      email: "",
+      password: "",
+    };
+
+    // EMAIL VALIDATION
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    // PASSWORD VALIDATION
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password =
+        "Password must be at least 8 characters";
+    }
+
+    setErrors(newErrors);
+
+    // STOP IF THERE ARE ERRORS
+    if (newErrors.email || newErrors.password) {
+      return;
+    }
+
     setLoading(true);
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json",
-      },
-       body: JSON.stringify(formData),
-       credentials: "include" // 🔥 important for cookies
-      })
-  
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(formData),
+        }
+      );
+
       let data;
+
       try {
         data = await res.json();
       } catch {
         data = { message: "Server error" };
       }
+
+      // BACKEND ERROR
       if (!res.ok) {
-        alert(data.message);
+        toast.error(data.message || "Login failed", {
+          duration: 3000,
+        });
+
         return;
       }
 
-      toast.success("Login successful");
-      router.push("/dashboard")
+      // SUCCESS
+      toast.success("Login successful", {
+        duration: 2000,
+      });
 
+      router.push("/dashboard");
     } catch (error) {
-      console.error(error)
+      console.error(error);
+
+      toast.error(
+        "Something went wrong. Please try again.",
+        {
+          duration: 3000,
+        }
+      );
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className=" bg-gray-200 px-4 md:px-8">
-      <div className=" flex items-center justify-center h-screen">
+    <div className="bg-gray-200 px-4 md:px-8">
+      <div className="flex items-center justify-center min-h-screen py-10">
         <div className="w-full max-w-lg">
-          <h1 className=" text-center font-bold text-3xl">Monvexa</h1>
-          <p className=" text-center mt-2">Your Money Clarity System</p>
 
-          <form 
+          {/* LOGO */}
+          <h1 className="text-center font-bold text-3xl">
+            Monvexa
+          </h1>
+
+          <p className="text-center mt-2 text-gray-600">
+            Your Money Clarity System
+          </p>
+
+          {/* FORM */}
+          <form
             onSubmit={handleSubmit}
-            className=" rounded-xl bg-white mt-7 px-4 py-8 md:p-8 w-full border-2 border-border outline-ring/50 shadow-2xs"
+            className="rounded-xl bg-white mt-7 px-4 py-8 md:p-8 w-full border border-gray-200 shadow-sm"
           >
-            <h2 className=" font-bold text-2xl mb-6">Welcome back</h2>
+            <h2 className="font-bold text-2xl mb-6">
+              Welcome back
+            </h2>
 
-            {/*  EMAIL */}
-            <div className="">
-              <label htmlFor="">Email</label>
-              <div className=" flex items-center gap-x-3 border-2 border-border outline-ring/50 rounded-2xl mt-2 p-3">
-                <HiOutlineMail className=" text-gray-600 text-2xl" />
-                <input 
-                  type="email" 
-                  name="email" 
+            {/* EMAIL */}
+            <div>
+              <label>Email</label>
+
+              <div
+                className={`flex items-center gap-x-3 border-2 rounded-2xl mt-2 p-3 transition ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+              >
+                <HiOutlineMail className="text-gray-600 text-2xl" />
+
+                <input
+                  type="email"
+                  name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className=" w-full outline-0"    
-                  placeholder="name@example.com" 
+                  className="w-full outline-none"
+                  placeholder="name@example.com"
                 />
               </div>
+
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             {/* PASSWORD */}
-            <div className=" mt-5">
-              <label htmlFor="">Password</label>
-              <div className=" flex items-center gap-x-3 border-2 border-border outline-ring/50  p-3 rounded-2xl mt-2">
-                <FiLock  className=" text-gray-600 text-2xl"/>
-                <input 
-                  type="password" 
-                  name="password" 
+            <div className="mt-5">
+              <label>Password</label>
+
+              <div
+                className={`flex items-center gap-x-3 border-2 p-3 rounded-2xl mt-2 transition ${
+                  errors.password
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+              >
+                <FiLock className="text-gray-600 text-2xl" />
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
                   value={formData.password}
-                  onChange={handleChange} 
-                  className=" w-full outline-0" 
+                  onChange={handleChange}
+                  className="w-full outline-none"
                   placeholder="••••••••"
                 />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                  className="text-gray-500 text-xl cursor-pointer"
+                >
+                  {showPassword ? (
+                    <VscEyeClosed />
+                  ) : (
+                    <VscEye />
+                  )}
+                </button>
               </div>
+
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password}
+                </p>
+              )}
             </div>
 
-            <div className=" flex items-center justify-between mt-4">
-              <div className=" flex items-center gap-x-3">
-                <input type="checkbox" name="" id="" className=" text-2xl cursor-pointer" />
-                <label htmlFor="">Remember me</label>
+            {/* REMEMBER + FORGOT PASSWORD */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center gap-x-2">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={ (e) => setRememberMe(e.target.checked)}
+                />
+
+                <label className="text-sm">
+                  Remember me
+                </label>
               </div>
 
-              <Link href="/forgot-password" className=" mt-2 text-primary text-[.8rem]">Forgot password?</Link>
+              <Link
+                href="/forgot-password"
+                className="text-primary text-sm font-medium"
+              >
+                Forgot password?
+              </Link>
             </div>
 
-            <div className=" mt-4">
-              <button 
+            {/* SUBMIT BUTTON */}
+            <div className="mt-5">
+              <button
                 type="submit"
                 disabled={loading}
-                className=" py-3 px-4 mb-3 rounded-xl w-full text-white bg-primary cursor-pointer"
-              > 
-                {loading ? "Login..." : "Sign in"}
+                className="py-3 px-4 mb-3 rounded-xl w-full text-white bg-primary cursor-pointer font-medium hover:opacity-90 transition disabled:opacity-60"
+              >
+                {loading ? "Signing in..." : "Sign in"}
               </button>
 
-              <p className=" text-center">Don't have an account? <Link href="/signup" className=" text-primary">Sign up</Link> </p>
+              <p className="text-center text-sm">
+                Don't have an account?
+                <Link
+                  href="/signup"
+                  className="text-primary pl-1 font-medium"
+                >
+                  Sign up
+                </Link>
+              </p>
             </div>
           </form>
 
-          <Toaster position="top-right" richColors />
+          {/* TOASTER */}
+          <Toaster
+            position="top-right"
+            richColors
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }

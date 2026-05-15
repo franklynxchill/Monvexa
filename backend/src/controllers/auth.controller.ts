@@ -17,6 +17,18 @@ export const signup = async (
   try {
     const { fullName, email, password } = req.body;
 
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters",
+      });
+    }
+
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -33,7 +45,7 @@ export const signup = async (
       password: hashedPassword,
     });
 
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user._id.toString(), false);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -66,14 +78,14 @@ export const login = async (
   res: Response
 ) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     const user = await User.findOne({ email })
       .select("+password");
 
     if (!user) {
       return res.status(400).json({
-        message: "Invalid credentials",
+        message: "Invalid email or password",
       });
     }
 
@@ -84,27 +96,22 @@ export const login = async (
 
     if (!isMatch) {
       return res.status(400).json({
-        message: "Invalid credentials",
+        message: "Invalid email or password",
       });
     }
 
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET!,
-      { expiresIn: "7d" }
+      { expiresIn: rememberMe ? "30d" : "1d", }
     );
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: rememberMe
+        ? 30 * 24 * 60 * 60 * 1000
+        : 24 * 60 * 60 * 1000,
       sameSite: "none",
     });
     return res.status(200).json({
@@ -203,7 +210,7 @@ export const forgotPassword = async (
 
     // frontend reset URL
     const resetUrl =
-      `http://localhost:3000/reset-password/${resetToken}`;
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
     console.log("RESET URL:", resetUrl);
 
