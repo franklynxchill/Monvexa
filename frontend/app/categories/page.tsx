@@ -9,16 +9,16 @@ import { IoMdTrendingUp } from "react-icons/io";
 import Navbar from "@/component/Navbar";
 import { RiDeleteBinLine } from "react-icons/ri";
 
-const colorOptions = [
-  "#ef4444", // Red
-  "#f97316", // Orange
-  "#eab308", // Yellow
-  "#22c55e", // Green
-  "#3b82f6", // Blue
-  "#8b5cf6", // Purple
-  "#ec4899", // Pink
-  "#6b7280", // Gray
-];
+// const colorOptions = [
+//   "#ef4444", // Red
+//   "#f97316", // Orange
+//   "#eab308", // Yellow
+//   "#22c55e", // Green
+//   "#3b82f6", // Blue
+//   "#8b5cf6", // Purple
+//   "#ec4899", // Pink
+//   "#6b7280", // Gray
+// ];
 
 const iconOptions = [
   {
@@ -61,7 +61,7 @@ export default function page() {
     name: "",
     type: "expense",
     icon: "",
-    color: "", // First chosen color
+    // color: "", // First chosen color
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,12 +72,12 @@ export default function page() {
     });
   };
 
-  const handleColorSelect = (color: string, colorField: 'color') => {
-    setCategoryData({
-      ...categoryData,
-      [colorField]: color,
-    });
-  };
+  // const handleColorSelect = (color: string, colorField: 'color') => {
+  //   setCategoryData({
+  //     ...categoryData,
+  //     [colorField]: color,
+  //   });
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +119,7 @@ export default function page() {
           name: "",
           type: "expense",
           icon: "",
-          color: "",
+          // color: "",
         });
 
         setCreateCategory(false);
@@ -214,7 +214,7 @@ export default function page() {
                             name: item.name,
                             type: item.type,
                             icon: item.icon,
-                            color: item.color, 
+                            // color: item.color, 
                           });
                         }}
                       />
@@ -252,7 +252,7 @@ export default function page() {
                             name: item.name,
                             type: item.type,
                             icon: item.icon,
-                            color: item.color, 
+                            // color: item.color, 
                           })
                         }}
                       />
@@ -367,7 +367,7 @@ export default function page() {
                 </div>
               </div>
 
-              <div className="mt-5">
+              {/* <div className="mt-5">
                 <label className="font-medium">Choose Color</label>
 
                 <div className="flex flex-wrap gap-3 mt-3">
@@ -392,7 +392,7 @@ export default function page() {
                     />
                   ))}
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex gap-4 mt-6">
                 <button

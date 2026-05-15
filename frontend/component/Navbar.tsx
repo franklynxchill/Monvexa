@@ -1,40 +1,57 @@
-import Link from "next/link"
-import { CgFileDocument } from "react-icons/cg"
-import { FaRegUser } from "react-icons/fa"
-import { GoHome } from "react-icons/go"
-import { IoSettingsOutline } from "react-icons/io5"
-import { LuChartPie } from "react-icons/lu"
+"use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { CgFileDocument } from "react-icons/cg";
+import { FaRegUser } from "react-icons/fa";
+import { GoHome } from "react-icons/go";
+import { IoSettingsOutline } from "react-icons/io5";
+import { LuChartPie } from "react-icons/lu";
 
 function Navbar() {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: "/dashboard", label: "Home", icon: GoHome },
+    { href: "/transactions", label: "History", icon: CgFileDocument },
+    { href: "/insights", label: "Analytics", icon: LuChartPie },
+    { href: "/settings", label: "Settings", icon: IoSettingsOutline },
+    { href: "/profile", label: "Profile", icon: FaRegUser },
+  ];
+
   return (
-    <div className="px-4">
-      <nav className=" fixed bottom-0 z-40 w-full py-3 border-t-2 border-t-gray-300 bg-white">
-        <div className=" flex items-center justify-center gap-x-5 md:gap-x-0 md:justify-evenly ">
-          <Link href="/dashboard" className=" flex flex-col gap-y-1 items-center justify-center text-[.9rem] md:text-base">
-            <GoHome className=" text-xl" />
-            Home
-          </Link>
-          <Link href="/transactions" className=" flex flex-col gap-y-1 items-center justify-center text-[.9rem] md:text-base">
-            <CgFileDocument className="text-xl" />
-            History
-          </Link>
-          <Link href="/insights" className=" flex flex-col gap-y-1 items-center justify-center text-[.9rem] md:text-base">
-            <LuChartPie className="text-xl" />
-            Analytics
-          </Link>
-          <Link href="/settings" className=" flex flex-col gap-y-1 items-center justify-center text-[.9rem] md:text-base">
-            <IoSettingsOutline className="text-xl" />
-            Settings
-          </Link>
-          <Link href="/profile" className=" flex flex-col gap-y-1 items-center justify-center text-[.9rem] md:text-base">
-            <FaRegUser className="text-xl" />
-            Profile
-          </Link>
-        </div>
-      </nav>
-    </div>
-  )
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 pb-safe">
+      <div className="flex items-center justify-between px-4 py-3 max-w-md mx-auto">
+
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="relative flex flex-col items-center text-xs w-full"
+            >
+              <Icon
+                className={`text-xl transition-colors duration-200 ${
+                  isActive ? "text-blue-600" : "text-gray-500"
+                }`}
+              />
+
+              <span
+                className={`transition-colors duration-200 ${
+                  isActive ? "text-blue-600" : "text-gray-500"
+                }`}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
 }
 
-export default Navbar
+export default Navbar;

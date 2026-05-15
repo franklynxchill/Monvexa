@@ -29,6 +29,11 @@ export default function Page() {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    amount: "",
+    category: "",
+  });
+
 
   const iconMap: any = {
     shopping: FiShoppingBag,
@@ -80,12 +85,29 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const newErrors ={
+      amount: "",
+      category: "",
+    }
+
+    // AMOUNT VALIDATION
+    if (!transactionData.amount) {
+      newErrors.amount = "Amount is required";
+    } else if (Number(transactionData.amount) <= 0) {
+      newErrors.amount = "Amount must be greater than 0";
+    }
+
+    // CATEGORY VALIDATION
+    if (!transactionData.category) {
+      newErrors.category = "Please select a category";
+    }
+
+    setErrors(newErrors);
+
     if (
-      !transactionData.amount ||
-      !transactionData.type ||
-      !transactionData.category
+      newErrors.amount ||
+      newErrors.category
     ) {
-      alert("Please fill all required fields");
       return;
     }
 
@@ -117,8 +139,13 @@ export default function Page() {
         return;
       }
 
-      toast.success("Transaction successful");
-      router.push("/dashboard");
+      toast.success("Transaction successful", {
+        duration: 1500,
+      });
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1200);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -157,6 +184,11 @@ export default function Page() {
                 placeholder="0"
               />
             </div>
+            {errors.amount && (
+              <p className="text-red-500 text-sm mt-2 text-center">
+                {errors.amount}
+              </p>
+            )}
           </div>
 
           {/* Type */}
@@ -222,6 +254,11 @@ export default function Page() {
                   );
                 })}
             </div>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-3">
+                {errors.category}
+              </p>
+            )}
           </div>
 
           {/* Note */}

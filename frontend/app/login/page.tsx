@@ -87,7 +87,10 @@ export default function Page() {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            rememberMe
+          }),
         }
       );
 
