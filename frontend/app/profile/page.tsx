@@ -114,7 +114,7 @@ function Page() {
             </div>
           </div>
 
-          <button className="bg-white/20 p-3 rounded-lg">
+          <button className="bg-white/20 p-2 rounded-lg">
             <FiEdit className="text-xl" />
           </button>
         </div>
@@ -145,7 +145,7 @@ function Page() {
         </h2>
 
         <div className="border-y flex items-center gap-x-3 py-4 px-4">
-          <HiOutlineMail className="text-2xl" />
+          <HiOutlineMail className="text-2xl text-muted-foreground" />
           <div>
             <label className="text-sm text-gray-500">
               Email
@@ -157,7 +157,7 @@ function Page() {
         </div>
 
         <div className="flex items-center gap-x-3 py-4 px-4">
-          <FiPhone className="text-2xl" />
+          <FiPhone className="text-2xl text-muted-foreground" />
           <div>
             <label className="text-sm text-gray-500">
               Phone
@@ -183,7 +183,7 @@ function Page() {
             </p>
           </div>
 
-          <LuCreditCard className="text-2xl" />
+          <LuCreditCard className="text-2xl text-muted-foreground" />
         </div>
 
         <div className="p-4 border-t">
@@ -195,9 +195,9 @@ function Page() {
 
       {/* DATA */}
       <div className="bg-white rounded-2xl border mt-5">
-        <Link href="" className="border-b flex items-center justify-between p-4 hover:bg-switch-background">
+        <Link href="" className="border-b flex items-center justify-between p-4 rounded-t-xl hover:bg-switch-background">
           <div className="flex items-center gap-x-3">
-            <LuDatabase className="text-2xl" />
+            <LuDatabase className="text-2xl text-muted-foreground" />
             <div>
               <label className="text-sm text-gray-500">
                 Data Backup
@@ -205,12 +205,12 @@ function Page() {
               <p>Secure cloud backup</p>
             </div>
           </div>
-          <IoIosArrowForward className="text-xl" />
+          <IoIosArrowForward className="text-xl text-muted-foreground" />
         </Link>
 
-        <Link href="" className="flex items-center justify-between p-4 hover:bg-switch-background">
+        <Link href="" className="flex items-center justify-between p-4 rounded-b-xl hover:bg-switch-background">
           <div className="flex items-center gap-x-3">
-            <LuDatabase className="text-2xl" />
+            <LuDatabase className="text-2xl text-muted-foreground" />
             <div>
               <label className="text-sm text-gray-500">
                 Export Data
@@ -218,7 +218,7 @@ function Page() {
               <p>Download transactions</p>
             </div>
           </div>
-          <IoIosArrowForward className="text-xl" />
+          <IoIosArrowForward className="text-xl text-muted-foreground" />
         </Link>
       </div>
 
