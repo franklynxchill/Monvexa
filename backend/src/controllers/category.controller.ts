@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Category from "../models/category.model";
 import Transaction from "../models/transaction.model";
+import mongoose from "mongoose";
 
 
 export const createCategory = async (req: Request, res: Response) => {
@@ -36,7 +37,7 @@ export const createCategory = async (req: Request, res: Response) => {
       type, 
       icon, 
       color, 
-      userId,
+      userId: new mongoose.Types.ObjectId(userId),
       isDefault: false,
     });
     res.status(201).json({ 

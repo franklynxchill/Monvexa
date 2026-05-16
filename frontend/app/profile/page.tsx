@@ -1,122 +1,268 @@
-"use client"
-import Navbar from "@/component/Navbar"
-import { useRouter } from "next/navigation"
-import { FiPhone } from "react-icons/fi"
-import { HiOutlineMail } from "react-icons/hi"
-import { IoIosArrowForward } from "react-icons/io"
-import { LuCreditCard, LuDatabase, LuLogOut } from "react-icons/lu"
+"use client";
 
+import Navbar from "@/component/Navbar";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-function page() {
+import { CiCalendar } from "react-icons/ci";
+import { FiEdit, FiPhone } from "react-icons/fi";
+import { HiOutlineMail } from "react-icons/hi";
+import { IoIosArrowForward } from "react-icons/io";
+import {
+  LuCreditCard,
+  LuDatabase,
+  LuLogOut,
+} from "react-icons/lu";
+
+type User = {
+  _id?: string;
+  fullName: string;
+  email: string;
+  createdAt?: string;
+};
+
+type Stats = {
+  totalTransactions: number;
+  totalCategories: number;
+  totalMonths: number;
+};
+
+function Page() {
   const router = useRouter();
 
-  const handleLogOut = async () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // FETCH USER + STATS
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        const data = await res.json();
+
+        setUser(data.user || data);
+        setStats(data.stats || null);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  // LOGOUT
+  const handleLogout = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include" // 🔥 important for cookies
-      })
-      router.push("/login")
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+      router.push("/login");
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
+  };
+
+  if (loading) {
+    return (
+      <div className="px-4 mt-10">
+        <p>Loading profile...</p>
+      </div>
+    );
   }
+
   return (
-    <div className="px-4 mt-6 mb-36"> 
-      <div className=" ">
-        <div className=""></div>
-        <div className=""></div>
+    <div className="px-4 mt-6 mb-36">
+      {/* PROFILE CARD */}
+      <div className="bg-primary rounded-2xl p-5 text-white">
 
-
-        <div className=" bg-white rounded-xl border-2 border-gray-300">
-          <h2 className=" font-bold p-4">Account Information</h2>
-          <div className=" border-y-2 border-y-gray-300 flex items-center gap-x-3 py-3 px-4">
-            <div className="">
-              <HiOutlineMail className=" text-2xl" />
+        <div className="flex items-start justify-between">
+          
+          <div className="flex items-center gap-x-5">
+            {/* AVATAR */}
+            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold uppercase">
+              {user?.fullName
+                ?.split(" ")
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join("")}
             </div>
-            <div className="">
-              <label htmlFor="">Email</label>
-              <p>chinedu.okafor@email.com</p>
+
+            {/* USER INFO */}
+            <div>
+              <h2 className="text-xl font-bold capitalize">
+                {user?.fullName}
+              </h2>
+              <p className="text-white/80 mt-1">
+                {user?.email}
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-x-3 py-3 px-4">
-            <div className="">
-              <FiPhone className=" text-2xl" />
-            </div>
-            <div className="">
-              <label htmlFor="">Phone</label>
-              <p>+234 803 456 7890</p>
-            </div>
+          <button className="bg-white/20 p-3 rounded-lg">
+            <FiEdit className="text-xl" />
+          </button>
+        </div>
+
+        {/* MEMBER SINCE */}
+        <div className="flex items-center gap-x-2 text-white/90 mt-5">
+          <CiCalendar className="text-xl" />
+
+          <p className="text-sm">
+            Member since{" "}
+            {user?.createdAt
+              ? new Date(user.createdAt).toLocaleDateString(
+                  "en-NG",
+                  {
+                    year: "numeric",
+                    month: "long",
+                  }
+                )
+              : "N/A"}
+          </p>
+        </div>
+      </div>
+
+      {/* ACCOUNT INFO */}
+      <div className="bg-white rounded-2xl border mt-6">
+        <h2 className="font-bold p-4">
+          Account Information
+        </h2>
+
+        <div className="border-y flex items-center gap-x-3 py-4 px-4">
+          <HiOutlineMail className="text-2xl" />
+          <div>
+            <label className="text-sm text-gray-500">
+              Email
+            </label>
+            <p className="font-semibold">
+              {user?.email}
+            </p>
           </div>
         </div>
 
-        <div className=" bg-white rounded-xl border-2 border-gray-300 mt-5">
-          <h2 className=" font-bold p-4">Subscription</h2>
-          <div className=" border-t-2 border-y-gray-300 flex items-center justify-between gap-x-3 py-3 px-4">
-            <div className="">
-              <label htmlFor="">Current Plan</label>
-              <p>Pro</p>
-            </div>
-
-            <div className="">
-              <LuCreditCard className=" text-2xl" />
-            </div>
-          </div>
-
-          <div className="p-3 border-t-2 border-gray-300">
-            <button className=" mt-3 rounded-xl bg-blue-700 text-white w-full py-3">Manage Subscription</button>
+        <div className="flex items-center gap-x-3 py-4 px-4">
+          <FiPhone className="text-2xl" />
+          <div>
+            <label className="text-sm text-gray-500">
+              Phone
+            </label>
+            <p>Not added yet</p>
           </div>
         </div>
+      </div>
 
-        <div className=" bg-white rounded-xl border-2 mt-7 border-gray-300">
-          <div className=" border-y-2 border-y-gray-300 flex items-center justify-between py-3 px-4">
-            <div className="flex items-center gap-x-3">
-              <div className="">
-                <LuDatabase className=" text-2xl" />
-              </div>
-              <div className="">
-                <label htmlFor="">Data Backup</label>
-                <p>chinedu.okafor@email.com</p>
-              </div>
-            </div>
+      {/* SUBSCRIPTION */}
+      <div className="bg-white rounded-2xl border mt-5">
+        <h2 className="font-bold p-4">
+          Subscription
+        </h2>
 
-            <div className="">
-              <IoIosArrowForward className=" text-xl" />
-            </div>
+        <div className="border-t flex items-center justify-between py-4 px-4">
+          <div>
+            <label className="text-sm text-gray-500">
+              Current Plan
+            </label>
+            <p className="font-semibold">
+              Free Plan
+            </p>
           </div>
 
-          <div className="flex items-center justify-between py-3 px-4">
-            <div className="flex items-center gap-x-3">
-              <div className="">
-                <LuDatabase className=" text-2xl" />
-              </div>
-              <div className="">
-                <label htmlFor="">Export Data</label>
-                <p>+234 803 456 7890</p>
-              </div>
-            </div>
-
-            <div className="">
-              <IoIosArrowForward className=" text-xl" />
-            </div>
-          </div>
+          <LuCreditCard className="text-2xl" />
         </div>
 
-        <div className="">
-          <button 
-            onClick={handleLogOut}
-            className=" w-full bg-pink-200/50 text-red-400 flex items-center justify-center gap-x-3 rounded-xl mt-8 py-3 px-4 font-bold"
-          >
-            <LuLogOut className=" text-xl" />
-            Logout
+        <div className="p-4 border-t">
+          <button className="w-full py-3 rounded-xl bg-blue-700 text-white">
+            Upgrade Plan
           </button>
         </div>
       </div>
 
+      {/* DATA */}
+      <div className="bg-white rounded-2xl border mt-5">
+        <div className="border-b flex items-center justify-between py-4 px-4">
+          <div className="flex items-center gap-x-3">
+            <LuDatabase className="text-2xl" />
+            <div>
+              <label className="text-sm text-gray-500">
+                Data Backup
+              </label>
+              <p>Secure cloud backup</p>
+            </div>
+          </div>
+          <IoIosArrowForward className="text-xl" />
+        </div>
+
+        <div className="flex items-center justify-between py-4 px-4">
+          <div className="flex items-center gap-x-3">
+            <LuDatabase className="text-2xl" />
+            <div>
+              <label className="text-sm text-gray-500">
+                Export Data
+              </label>
+              <p>Download transactions</p>
+            </div>
+          </div>
+          <IoIosArrowForward className="text-xl" />
+        </div>
+      </div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-3 gap-3 mt-6">
+        <div className="bg-white border-2 rounded-xl py-6 text-center">
+          <h2 className="text-3xl font-bold">
+            {stats?.totalTransactions ?? 0}
+          </h2>
+          <p className="text-base text-muted-foreground">
+            Transactions
+          </p>
+        </div>
+
+        <div className="bg-white border-2 rounded-xl py-6 text-center">
+          <h2 className="text-3xl font-bold">
+            {stats?.totalCategories ?? 0}
+          </h2>
+          <p className="text-base text-muted-foreground">
+            Categories
+          </p>
+        </div>
+
+        <div className="bg-white border-2 rounded-xl py-6 text-center">
+          <h2 className="text-3xl font-bold">
+            {stats?.totalMonths ?? 0}
+          </h2>
+          <p className="text-base text-muted-foreground">
+            Months
+          </p>
+        </div>
+      </div>
+
+      {/* LOGOUT */}
+      <button
+        onClick={handleLogout}
+        className="w-full bg-red-100 text-red-500 flex items-center justify-center gap-x-3 rounded-xl mt-8 py-3 font-semibold"
+      >
+        <LuLogOut className="text-xl" />
+        Logout
+      </button>
+
       <Navbar />
     </div>
-  )
+  );
 }
 
-export default page
+export default Page;

@@ -1,32 +1,50 @@
 import { Request, Response } from "express";
 import Transaction from "../models/transaction.model";
+import Category from "../models/category.model";
 
 // ===============================
 // HELPER: % CHANGE CALCULATOR
 // ===============================
-const calculateChange = (current: number, previous: number) => {
-  if (previous === 0) return current > 0 ? 100 : 0;
+const calculateChange = (
+  current: number,
+  previous: number
+) => {
+  if (previous === 0) {
+    return current > 0 ? 100 : 0;
+  }
 
-  return Math.round(((current - previous) / Math.abs(previous)) * 100);
+  return Math.round(
+    ((current - previous) / Math.abs(previous)) * 100
+  );
 };
 
 // ===============================
 // GET DASHBOARD DATA
 // ===============================
-export const getDashboard = async (req: Request, res: Response) => {
+export const getDashboard = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const userId = req.user?.userId;
 
     if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
     }
 
-    const transactions = await Transaction.find({ userId })
+    // =========================
+    // FETCH TRANSACTIONS
+    // =========================
+    const transactions = await Transaction.find({
+      userId,
+    })
       .populate("category")
       .sort({ createdAt: -1 });
 
     // =========================
-    // INCOME / EXPENSE / BALANCE
+    // TOTAL INCOME / EXPENSE
     // =========================
     const income = transactions
       .filter((t) => t.type === "income")
@@ -43,14 +61,17 @@ export const getDashboard = async (req: Request, res: Response) => {
     // =========================
     const today = new Date();
 
-    const todayTransactions = transactions.filter((t) => {
-      const d = new Date(t.date);
-      return (
-        d.getDate() === today.getDate() &&
-        d.getMonth() === today.getMonth() &&
-        d.getFullYear() === today.getFullYear()
-      );
-    });
+    const todayTransactions = transactions.filter(
+      (t) => {
+        const d = new Date(t.date);
+
+        return (
+          d.getDate() === today.getDate() &&
+          d.getMonth() === today.getMonth() &&
+          d.getFullYear() === today.getFullYear()
+        );
+      }
+    );
 
     const todayIncome = todayTransactions
       .filter((t) => t.type === "income")
@@ -60,123 +81,233 @@ export const getDashboard = async (req: Request, res: Response) => {
       .filter((t) => t.type === "expense")
       .reduce((a, b) => a + b.amount, 0);
 
-    const todayProfit = todayIncome - todayExpense;
+    const todayProfit =
+      todayIncome - todayExpense;
 
+    // =========================
     // YESTERDAY
+    // =========================
     const yesterday = new Date();
+
     yesterday.setDate(today.getDate() - 1);
 
-    const yesterdayTransactions = transactions.filter((t) => {
-      const d = new Date(t.date);
-      return (
-        d.getDate() === yesterday.getDate() &&
-        d.getMonth() === yesterday.getMonth() &&
-        d.getFullYear() === yesterday.getFullYear()
-      );
-    });
+    const yesterdayTransactions =
+      transactions.filter((t) => {
+        const d = new Date(t.date);
 
-    const yesterdayIncome = yesterdayTransactions
-      .filter((t) => t.type === "income")
-      .reduce((a, b) => a + b.amount, 0);
+        return (
+          d.getDate() === yesterday.getDate() &&
+          d.getMonth() === yesterday.getMonth() &&
+          d.getFullYear() ===
+            yesterday.getFullYear()
+        );
+      });
 
-    const yesterdayExpense = yesterdayTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((a, b) => a + b.amount, 0);
+    const yesterdayIncome =
+      yesterdayTransactions
+        .filter((t) => t.type === "income")
+        .reduce((a, b) => a + b.amount, 0);
 
-    const yesterdayProfit = yesterdayIncome - yesterdayExpense;
+    const yesterdayExpense =
+      yesterdayTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((a, b) => a + b.amount, 0);
 
-    const todayChange = calculateChange(todayProfit, yesterdayProfit);
+    const yesterdayProfit =
+      yesterdayIncome - yesterdayExpense;
+
+    const todayChange = calculateChange(
+      todayProfit,
+      yesterdayProfit
+    );
 
     // =========================
     // WEEKLY
     // =========================
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 7);
 
-    const weeklyTransactions = transactions.filter(
-      (t) => new Date(t.date) >= sevenDaysAgo
+    sevenDaysAgo.setDate(
+      today.getDate() - 7
     );
 
-    const weeklyIncome = weeklyTransactions
-      .filter((t) => t.type === "income")
-      .reduce((a, b) => a + b.amount, 0);
+    const weeklyTransactions =
+      transactions.filter(
+        (t) =>
+          new Date(t.date) >= sevenDaysAgo
+      );
 
-    const weeklyExpense = weeklyTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((a, b) => a + b.amount, 0);
+    const weeklyIncome =
+      weeklyTransactions
+        .filter((t) => t.type === "income")
+        .reduce((a, b) => a + b.amount, 0);
 
-    const weeklyProfit = weeklyIncome - weeklyExpense;
+    const weeklyExpense =
+      weeklyTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((a, b) => a + b.amount, 0);
 
+    const weeklyProfit =
+      weeklyIncome - weeklyExpense;
+
+    // =========================
     // PREVIOUS WEEK
+    // =========================
     const prevWeekStart = new Date();
-    prevWeekStart.setDate(today.getDate() - 14);
+
+    prevWeekStart.setDate(
+      today.getDate() - 14
+    );
 
     const prevWeekEnd = new Date();
-    prevWeekEnd.setDate(today.getDate() - 7);
 
-    const prevWeekTransactions = transactions.filter((t) => {
-      const d = new Date(t.date);
-      return d >= prevWeekStart && d < prevWeekEnd;
-    });
+    prevWeekEnd.setDate(
+      today.getDate() - 7
+    );
 
-    const prevWeekIncome = prevWeekTransactions
-      .filter((t) => t.type === "income")
-      .reduce((a, b) => a + b.amount, 0);
+    const prevWeekTransactions =
+      transactions.filter((t) => {
+        const d = new Date(t.date);
 
-    const prevWeekExpense = prevWeekTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((a, b) => a + b.amount, 0);
+        return (
+          d >= prevWeekStart &&
+          d < prevWeekEnd
+        );
+      });
 
-    const prevWeekProfit = prevWeekIncome - prevWeekExpense;
+    const prevWeekIncome =
+      prevWeekTransactions
+        .filter((t) => t.type === "income")
+        .reduce((a, b) => a + b.amount, 0);
 
-    const weeklyChange = calculateChange(weeklyProfit, prevWeekProfit);
+    const prevWeekExpense =
+      prevWeekTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((a, b) => a + b.amount, 0);
+
+    const prevWeekProfit =
+      prevWeekIncome - prevWeekExpense;
+
+    const weeklyChange =
+      calculateChange(
+        weeklyProfit,
+        prevWeekProfit
+      );
 
     // =========================
     // MONTHLY
     // =========================
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const currentMonth =
+      today.getMonth();
 
-    const monthlyTransactions = transactions.filter((t) => {
-      const d = new Date(t.date);
-      return (
-        d.getMonth() === currentMonth &&
-        d.getFullYear() === currentYear
-      );
-    });
+    const currentYear =
+      today.getFullYear();
 
-    const monthlyIncome = monthlyTransactions
-      .filter((t) => t.type === "income")
-      .reduce((a, b) => a + b.amount, 0);
+    const monthlyTransactions =
+      transactions.filter((t) => {
+        const d = new Date(t.date);
 
-    const monthlyExpense = monthlyTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((a, b) => a + b.amount, 0);
+        return (
+          d.getMonth() === currentMonth &&
+          d.getFullYear() === currentYear
+        );
+      });
 
-    const monthlyProfit = monthlyIncome - monthlyExpense;
+    const monthlyIncome =
+      monthlyTransactions
+        .filter((t) => t.type === "income")
+        .reduce((a, b) => a + b.amount, 0);
 
+    const monthlyExpense =
+      monthlyTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((a, b) => a + b.amount, 0);
+
+    const monthlyProfit =
+      monthlyIncome - monthlyExpense;
+
+    // =========================
     // PREVIOUS MONTH
-    const prevMonthDate = new Date(currentYear, currentMonth - 1, 1);
+    // =========================
+    const prevMonthDate = new Date(
+      currentYear,
+      currentMonth - 1,
+      1
+    );
 
-    const prevMonthTransactions = transactions.filter((t) => {
-      const d = new Date(t.date);
-      return (
-        d.getMonth() === prevMonthDate.getMonth() &&
-        d.getFullYear() === prevMonthDate.getFullYear()
+    const prevMonthTransactions =
+      transactions.filter((t) => {
+        const d = new Date(t.date);
+
+        return (
+          d.getMonth() ===
+            prevMonthDate.getMonth() &&
+          d.getFullYear() ===
+            prevMonthDate.getFullYear()
+        );
+      });
+
+    const prevMonthIncome =
+      prevMonthTransactions
+        .filter((t) => t.type === "income")
+        .reduce((a, b) => a + b.amount, 0);
+
+    const prevMonthExpense =
+      prevMonthTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((a, b) => a + b.amount, 0);
+
+    const prevMonthProfit =
+      prevMonthIncome - prevMonthExpense;
+
+    const monthlyChange =
+      calculateChange(
+        monthlyProfit,
+        prevMonthProfit
       );
-    });
 
-    const prevMonthIncome = prevMonthTransactions
-      .filter((t) => t.type === "income")
-      .reduce((a, b) => a + b.amount, 0);
+    // =========================
+    // TOTAL TRANSACTIONS
+    // =========================
+    const totalTransactions =
+      await Transaction.countDocuments({
+        userId,
+      });
 
-    const prevMonthExpense = prevMonthTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((a, b) => a + b.amount, 0);
+    // =========================
+    // TOTAL CATEGORIES
+    // =========================
+    const totalCategories =
+      await Category.countDocuments({
+        userId,
+      });
 
-    const prevMonthProfit = prevMonthIncome - prevMonthExpense;
+    // =========================
+    // TOTAL MONTHS ACTIVE
+    // =========================
+    const oldestTransaction =
+      await Transaction.findOne({
+        userId,
+      }).sort({
+        createdAt: 1,
+      });
 
-    const monthlyChange = calculateChange(monthlyProfit, prevMonthProfit);
+    let totalMonths = 0;
+
+    if (oldestTransaction) {
+      const startDate = new Date(
+        oldestTransaction.createdAt
+      );
+
+      const currentDate = new Date();
+
+      totalMonths =
+        (currentDate.getFullYear() -
+          startDate.getFullYear()) *
+          12 +
+        (currentDate.getMonth() -
+          startDate.getMonth()) +
+        1;
+    }
 
     // =========================
     // RESPONSE
@@ -208,20 +339,44 @@ export const getDashboard = async (req: Request, res: Response) => {
       weeklyStats: {
         income: weeklyIncome,
         expense: weeklyExpense,
+
         incomePercentage:
-          weeklyIncome + weeklyExpense > 0
-            ? Math.round((weeklyIncome / (weeklyIncome + weeklyExpense)) * 100)
+          weeklyIncome + weeklyExpense >
+          0
+            ? Math.round(
+                (weeklyIncome /
+                  (weeklyIncome +
+                    weeklyExpense)) *
+                  100
+              )
             : 0,
+
         expensePercentage:
-          weeklyIncome + weeklyExpense > 0
-            ? Math.round((weeklyExpense / (weeklyIncome + weeklyExpense)) * 100)
+          weeklyIncome + weeklyExpense >
+          0
+            ? Math.round(
+                (weeklyExpense /
+                  (weeklyIncome +
+                    weeklyExpense)) *
+                  100
+              )
             : 0,
       },
 
-      recentTransactions: transactions.slice(0, 5),
+      stats: {
+        totalTransactions,
+        totalCategories,
+        totalMonths,
+      },
+
+      recentTransactions:
+        transactions.slice(0, 5),
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };

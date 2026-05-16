@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 
 import Transaction from "../models/transaction.model";
 import Category from "../models/category.model";
+import mongoose from "mongoose";
 
 import { AuthRequest } from "../middleware/auth.middleware";
 
@@ -32,7 +33,7 @@ export const createTransaction = async (
       _id: category,
       $or: [
         { isDefault: true },
-        { userId },
+        { userId: new mongoose.Types.ObjectId(userId)},
         { userId: null },
       ],
     });
@@ -49,7 +50,7 @@ export const createTransaction = async (
       category,
       date,
       note,
-      userId,
+       userId: new mongoose.Types.ObjectId(userId),
     });
 
     return res.status(201).json({
@@ -81,7 +82,7 @@ export const getTransaction = async (
     }
 
     const transactions = await Transaction.find({
-      userId,
+      userId: new mongoose.Types.ObjectId(userId),
     })
       .populate("category")
       .sort({ createdAt: -1 });
@@ -119,7 +120,7 @@ export const updateTransaction = async (
     const transaction = await Transaction.findOneAndUpdate(
       {
         _id: id,
-        userId,
+        userId: new mongoose.Types.ObjectId(userId),
       },
       {
         $set: req.body,
@@ -168,7 +169,7 @@ export const deleteTransaction = async (
 
     const transaction = await Transaction.findOneAndDelete({
       _id: id,
-      userId,
+      userId: new mongoose.Types.ObjectId(userId),
     });
 
     if (!transaction) {

@@ -5,6 +5,11 @@ import jwt from "jsonwebtoken";
 
 import User from "../models/user.model";
 import { generateToken } from "../utils/generateToken";
+import mongoose from "mongoose";
+import Transaction from "../models/transaction.model";
+import Category from "../models/category.model";
+
+
 
 
 // =======================
@@ -151,21 +156,107 @@ export const logout = (
 // =======================
 // GET CURRENT USER
 // =======================
-export const getMe = async (
-  req: any,
-  res: Response
-) => {
+
+export const getMe = async (req: any, res: Response) => {
   try {
-    const user = await User.findById(req.user.userId)
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    // =========================
+    // USER
+    // =========================
+    const user = await User.findById(objectId)
       .select("-password");
 
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // =========================
+    // TRANSACTION STATS
+    // =========================
+    const transactionStats =
+      await Transaction.aggregate([
+        {
+          $match: {
+            userId: objectId,
+          },
+        },
+
+        {
+          $group: {
+            _id: null,
+
+            totalTransactions: {
+              $sum: 1,
+            },
+
+            months: {
+              $addToSet: {
+                $dateToString: {
+                  format: "%Y-%m",
+                  date: "$date",
+                },
+              },
+            },
+          },
+        },
+
+        {
+          $project: {
+            _id: 0,
+            totalTransactions: 1,
+            totalMonths: {
+              $size: "$months",
+            },
+          },
+        },
+      ]);
+
+    // =========================
+    // CATEGORY STATS
+    // =========================
+    const totalCategories =
+      await Category.countDocuments({
+        userId: objectId,
+      });
+
+    // =========================
+    // FINAL STATS
+    // =========================
+    const stats = {
+      totalTransactions:
+        transactionStats[0]?.totalTransactions || 0,
+
+      totalMonths:
+        transactionStats[0]?.totalMonths || 0,
+
+      totalCategories,
+    };
+
+    return res.status(200).json({
+      user,
+      stats,
+    });
+
+  } catch (error) {
+    console.error("GET ME ERROR:", error);
+
+    return res.status(500).json({
       message: "Server error",
     });
   }
 };
+
 
 // =======================
 // FORGET PASSWORD
