@@ -1,6 +1,7 @@
 "use client";
 
 import Navbar from "@/component/Navbar";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -92,9 +93,9 @@ function Page() {
 
         <div className="flex items-start justify-between">
           
-          <div className="flex items-center gap-x-5">
+          <div className="flex items-center gap-x-3">
             {/* AVATAR */}
-            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold uppercase">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold uppercase">
               {user?.fullName
                 ?.split(" ")
                 .map((n) => n[0])
@@ -194,7 +195,7 @@ function Page() {
 
       {/* DATA */}
       <div className="bg-white rounded-2xl border mt-5">
-        <div className="border-b flex items-center justify-between py-4 px-4">
+        <Link href="" className="border-b flex items-center justify-between p-4 hover:bg-switch-background">
           <div className="flex items-center gap-x-3">
             <LuDatabase className="text-2xl" />
             <div>
@@ -205,9 +206,9 @@ function Page() {
             </div>
           </div>
           <IoIosArrowForward className="text-xl" />
-        </div>
+        </Link>
 
-        <div className="flex items-center justify-between py-4 px-4">
+        <Link href="" className="flex items-center justify-between p-4 hover:bg-switch-background">
           <div className="flex items-center gap-x-3">
             <LuDatabase className="text-2xl" />
             <div>
@@ -218,34 +219,34 @@ function Page() {
             </div>
           </div>
           <IoIosArrowForward className="text-xl" />
-        </div>
+        </Link>
       </div>
 
       {/* STATS */}
       <div className="grid grid-cols-3 gap-3 mt-6">
         <div className="bg-white border-2 rounded-xl py-6 text-center">
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl font-bold">
             {stats?.totalTransactions ?? 0}
           </h2>
-          <p className="text-base text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Transactions
           </p>
         </div>
 
         <div className="bg-white border-2 rounded-xl py-6 text-center">
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl font-bold">
             {stats?.totalCategories ?? 0}
           </h2>
-          <p className="text-base text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Categories
           </p>
         </div>
 
         <div className="bg-white border-2 rounded-xl py-6 text-center">
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl font-bold">
             {stats?.totalMonths ?? 0}
           </h2>
-          <p className="text-base text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Months
           </p>
         </div>

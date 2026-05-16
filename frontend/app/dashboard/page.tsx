@@ -4,7 +4,7 @@ import Navbar from "@/component/Navbar";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import { IoMdTrendingUp } from "react-icons/io";
+import { IoMdTrendingDown, IoMdTrendingUp } from "react-icons/io";
 import { MdOutlineArrowOutward } from "react-icons/md";
 
 type DashboardData = {
@@ -108,7 +108,7 @@ export default function Page() {
               {(today?.change ?? 0) >= 0 ? (
                 <IoMdTrendingUp />
               ) : (
-                <MdOutlineArrowOutward className="rotate-180" />
+                <IoMdTrendingDown />
               )}
 
               {formatPercentage(today?.change)}
@@ -151,7 +151,7 @@ export default function Page() {
               {(weekly?.change ?? 0) >= 0 ? (
                 <IoMdTrendingUp />
               ) : (
-                <MdOutlineArrowOutward className="rotate-180" />
+                <IoMdTrendingDown  />
               )}
 
               {formatPercentage(weekly?.change)}
@@ -176,7 +176,7 @@ export default function Page() {
               {(monthly?.change ?? 0) >= 0 ? (
                 <IoMdTrendingUp />
               ) : (
-                <MdOutlineArrowOutward className="rotate-180" />
+                <IoMdTrendingDown />
               )}
 
               {formatPercentage(monthly?.change)}
