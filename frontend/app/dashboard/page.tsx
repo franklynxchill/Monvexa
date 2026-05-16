@@ -72,7 +72,60 @@ export default function Page() {
     fetchDashboard();
   }, []);
 
-  if (!dashboard) return <p className="mt-10 px-4">Loading...</p>;
+  if (!dashboard) {
+    return (
+      <div className="px-4 pb-28 min-h-screen animate-pulse">
+
+        {/* HEADER SKELETON */}
+        <div className="mt-4">
+          <div className="h-6 w-40 bg-gray-200 rounded mb-2" />
+          <div className="h-4 w-72 bg-gray-200 rounded" />
+        </div>
+
+        {/* TODAY CARD */}
+        <div className="mt-8 bg-gray-200 rounded-3xl p-6 h-40" />
+
+        {/* WEEKLY + MONTHLY */}
+        <div className="flex gap-4 mt-6">
+          <div className="flex-1 bg-gray-200 rounded-2xl h-28" />
+          <div className="flex-1 bg-gray-200 rounded-2xl h-28" />
+        </div>
+
+        {/* WEEKLY STATS */}
+        <div className="my-7 bg-white rounded-2xl border p-5">
+          <div className="h-5 w-32 bg-gray-200 rounded mb-6" />
+
+          <div className="space-y-6">
+            <div>
+              <div className="flex justify-between mb-2">
+                <div className="h-4 w-16 bg-gray-200 rounded" />
+                <div className="h-4 w-20 bg-gray-200 rounded" />
+              </div>
+              <div className="h-3 w-full bg-gray-200 rounded" />
+            </div>
+
+            <div>
+              <div className="flex justify-between mb-2">
+                <div className="h-4 w-16 bg-gray-200 rounded" />
+                <div className="h-4 w-20 bg-gray-200 rounded" />
+              </div>
+              <div className="h-3 w-full bg-gray-200 rounded" />
+            </div>
+          </div>
+        </div>
+
+        {/* INSIGHTS */}
+        <div className="border rounded-2xl p-5 bg-white">
+          <div className="h-5 w-40 bg-gray-200 rounded mb-4" />
+
+          <div className="space-y-4">
+            <div className="h-12 bg-gray-200 rounded" />
+            <div className="h-12 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const today = dashboard.profitMetrics?.today;
   const weekly = dashboard.profitMetrics?.weekly;
